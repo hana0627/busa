@@ -12,4 +12,5 @@ class HomeController {
     fun healthCheck(): String {
         return "<h4>안녕</h4>"
     }
+
 }

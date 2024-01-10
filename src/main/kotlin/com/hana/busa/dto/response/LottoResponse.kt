@@ -1,6 +1,6 @@
 package com.hana.busa.dto.response
 
-import java.time.LocalDateTime
+import com.hana.busa.domain.Lotto
 
 data class LottoResponse(
     val totSellamnt: Long, // 총상금액
@@ -21,9 +21,22 @@ data class LottoResponse(
 ) {
 
 
-    companion object {
-        fun parseLottoResponse(String: Int) {
-
-        }
+    fun toEntity() : Lotto {
+        return Lotto(
+            totSellamnt = this.totSellamnt,
+            returnValue = this.returnValue,
+            drwNo = this.drwNo,
+            drwNoDate = this.drwNoDate,
+            firstWinamnt = this.firstWinamnt,
+            firstPrzwnerCo = this.firstPrzwnerCo,
+            firstAccumamnt = this.firstAccumamnt,
+            drwtNo1 = this.drwtNo1,
+            drwtNo2 = this.drwtNo2,
+            drwtNo3 = this.drwtNo3,
+            drwtNo4 = this.drwtNo4,
+            drwtNo5 = this.drwtNo5,
+            drwtNo6 = this.drwtNo6,
+            bnusNo = this.bnusNo,
+            )
     }
 }
