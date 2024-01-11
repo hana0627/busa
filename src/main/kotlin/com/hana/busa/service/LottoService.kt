@@ -3,6 +3,7 @@ package com.hana.busa.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hana.busa.domain.Lotto
 import com.hana.busa.dto.response.LottoResponse
+import com.hana.busa.dto.response.OneNumberResponse
 import com.hana.busa.repository.LottoRepository
 import lombok.RequiredArgsConstructor
 import org.springframework.http.HttpEntity
@@ -27,6 +28,23 @@ class LottoService(
     fun queryDslTest(): List<Int> {
         return lottoRepository.findAllWithQueryDsl()
     }
+
+    fun findIdxNum(idx: Int): List<OneNumberResponse> {
+//        val results = mutableListOf<OneNumberResponse>()
+//        val numbers = lottoRepository.findIdxNum(idx)
+//        for (number in numbers) {
+//            results.firstOrNull{dto -> dto.number == number} ?. plusOne()
+//                ?: results.add(OneNumberResponse(number,1))
+//        }
+//        results.sortBy { e -> e.number }
+//        return results
+
+        // 이렇게 쿼리로 해결 가능하다.
+        return lottoRepository.findIdxNumWithQuery(idx)
+    }
+
+
+
 
     fun findByDrwNo(drwNo: Int) {
         val headers = HttpHeaders()
@@ -68,3 +86,7 @@ class LottoService(
         return "success"
     }
 }
+
+
+
+
