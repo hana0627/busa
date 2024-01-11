@@ -38,3 +38,7 @@ out/
 
 .front/node_modules/
 .front/package-lock.json
+
+
+### Custom ###
+src/test/resources/application.yml
