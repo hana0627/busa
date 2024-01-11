@@ -24,6 +24,10 @@ class LottoService(
     private val BASE_URL = "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo="
 
 
+    fun queryDslTest(): List<Int> {
+        return lottoRepository.findAllWithQueryDsl()
+    }
+
     fun findByDrwNo(drwNo: Int) {
         val headers = HttpHeaders()
         headers.set("Accept", "application/json")
