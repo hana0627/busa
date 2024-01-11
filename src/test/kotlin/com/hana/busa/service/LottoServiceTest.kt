@@ -1,10 +1,13 @@
 package com.hana.busa.service
 
+import com.hana.busa.dto.response.LottoResponse
 import com.hana.busa.repository.LottoRepository
-import org.assertj.core.api.Assertions
+import jakarta.persistence.EntityNotFoundException
+import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
@@ -18,34 +21,82 @@ class LottoServiceTest @Autowired constructor(
 ) {
 
     @Test
-    @DisplayName("쿼리Dsl이 정상적으로 동작하는지 확인한다.")
-    fun test() {
-        // given
-
-        // when
-        val results = sut.queryDslTest()
-        //then
-        Assertions.assertThat(results).isNotEmpty
-        println(results.size)
-    }
-
-
-    @Test
     @DisplayName("idx에 1~6사이의 숫자를 넣으면 해당 번째 번호가 몇개씩 나왔는지 확인가능하다.")
     fun findIdxNumTest() {
         // given
 
         // when
-        val results = sut.findIdxNum(1)
+        val results = sut.findIdxNum(6)
 
         // then
         println(results)
     }
+    @Test
+    @DisplayName("첫번째 숫자는 20이하, 마지막숫자는 30이 넘게 6자리 수를 추출한다.")
+    fun getNumbersTest() {
+        //given
+
+        //when
+        val results:List<LottoResponse> = sut.getNumbers(100)
+
+        //then
+        results.forEach{println(it)}
+        results.forEach{assertNumber(it)}
+    }
+
+
+    private fun assertNumber(result: LottoResponse) {
+        assertThat(result.firstNum).isLessThan(21)
+        assertThat(result.sixthNum).isGreaterThan(29)
+    }
+
+
+    @Test
+    @DisplayName("회차별 조회_성공")
+    fun getByDrwNoTest() {
+        //given
+        val drwNo: Int = 800
+
+        //when
+        val result: LottoResponse = sut.getByDrwNo(drwNo)
+
+        //then
+        assertThat(result).isNotNull
+        assertThat(result.firstNum).isEqualTo(1)
+        assertThat(result.secondNum).isEqualTo(4)
+        assertThat(result.thirdNum).isEqualTo(10)
+        assertThat(result.fourthNum).isEqualTo(12)
+        assertThat(result.fifthNum).isEqualTo(28)
+        assertThat(result.sixthNum).isEqualTo(45)
+    }
+
+
+
+    @Test
+    @DisplayName("회차별 조회_없는회차 조회")
+    fun getByDrwNo_Fail_Test() {
+        //given
+        val drwNo: Int = 999999
+
+        //when
+
+        val message = assertThrows<EntityNotFoundException> {
+            sut.getByDrwNo(drwNo)
+        }.message
+
+        //then
+        assertThat(message).isEqualTo("존재하지 않는 회차입니다.")
+    }
+
+
 }
 
 
 
 /* 1 ~ 1100 회차정리
+
+분석하려다가 포기
+머신러닝이나 막 알고리즘 함수 알아야할듯,,
 
 draw1
 (number=1, count=152)
@@ -114,10 +165,6 @@ OneNumberResponse(number=33, count=3)
 OneNumberResponse(number=34, count=3)
 OneNumberResponse(number=36, count=2)
 OneNumberResponse(number=37, count=1)
-
-
-
-
 
 
  */

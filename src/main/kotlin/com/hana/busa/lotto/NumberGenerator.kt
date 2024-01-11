@@ -11,7 +11,6 @@ class NumberGenerator {
                 randomList.add(num)
             }
         }
-
         randomList.sort()
         return randomList
 
