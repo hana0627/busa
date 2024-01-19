@@ -2,8 +2,12 @@ package com.hana.busa.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hana.busa.domain.Lotto
+import com.hana.busa.dto.response.LottoApiResponse
 import com.hana.busa.dto.response.LottoResponse
+import com.hana.busa.dto.response.OneNumberResponse
+import com.hana.busa.lotto.NumberGenerator
 import com.hana.busa.repository.LottoRepository
+import jakarta.persistence.EntityNotFoundException
 import lombok.RequiredArgsConstructor
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -23,17 +27,37 @@ class LottoService(
 ) {
     private val BASE_URL = "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo="
 
-
-    fun findByDrwNo(drwNo: Int) {
-        val headers = HttpHeaders()
-        headers.set("Accept", "application/json")
-        val httpEntity = HttpEntity<Any>(headers)
-
-        val url = BASE_URL + drwNo
-        val response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String::class.java).body
-        val json = objectMapper.readValue(response, LottoResponse::class.java);
-        println(json)
+    fun findIdxNum(idx: Int): List<OneNumberResponse> {
+        return lottoRepository.findIdxNumWithQuery(idx)
     }
+
+    fun getNumbers(game: Int): MutableList<LottoResponse> {
+        val results =  mutableListOf <LottoResponse>()
+        var randomList: List<Int>
+        for(i in 0..game) {
+            while(true) {
+                randomList = NumberGenerator().random()
+                if(randomList[0] <=20 && randomList[5] >=30) {
+                    break;
+                }
+            }
+            results.add(LottoResponse(randomList))
+        }
+        return results
+    }
+
+    fun getByDrwNo(drwNo: Int): LottoResponse {
+        return LottoResponse(lottoRepository.findByDrwNo(drwNo)
+            ?: throw EntityNotFoundException("존재하지 않는 회차입니다."))
+    }
+
+
+
+
+
+
+
+
 
     @Transactional
     fun init(): String {
@@ -53,7 +77,7 @@ class LottoService(
                     break;
                 }
             }
-            val dto = objectMapper.readValue(response, LottoResponse::class.java);
+            val dto = objectMapper.readValue(response, LottoApiResponse::class.java);
             val entity: Lotto = dto.toEntity()
             results.add(entity)
         }
@@ -64,3 +88,7 @@ class LottoService(
         return "success"
     }
 }
+
+
+
+
